@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Craig Roberts">
+
+
+    <title>Reference Set Tool</title>
+
+<!-- Bootstrap core CSS -->
+    <link href="/refSetTool/index_files/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles -->
+    <link href="/refSetTool/index_files/dashboard.css" rel="stylesheet">
+
+    
+  <style id="holderjs-style" type="text/css"></style>
+  <style type="text/css"></style>
+  </head>
+
+  <body onload="showCreds()">
+
+<!-- Navbar --> 
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Reference Set Tool</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/refSetTool/index.html">Login</a></li>
+            <li><a href="/refSetTool/sets.html">Sets</a></li>
+            <li><a href="/refSetTool/maps.html">Maps</a></li>
+            <li><a href="/refSetTool/mapofsets.html">Maps of Sets</a></li>
+            <li><a href="/refSetTool/mapofmaps.html">Maps of Maps</a></li>
+          </ul>
+
+<!-- Right hand side of Navbar --> 
+            <form class="navbar-form navbar-right" role="form">
+                <button onclick="clearStorage()" class="btn btn-danger">Unauthorize</button>
+                <button id="loginInfo" class="btn btn-default"></button>
+              </div>  
+            </form>
+        </div>
+      </div>
+    </div>
+
+<!-- End of Navbar -->
+
+  <div class="row">
+    <div class="col-md-6"> 
+      <div class="wrapper">
+        <div class="form-signin">
+          <h2>Readme</h2>
+            <ul>
+              <li>Use the box on the right enter the details</li>
+              <li>These will be stored in html5 localstorage in your web browser</li>
+              <li>You can delete these at any using the "unauthorize" button</li>
+              <li>You can then use the tabs at the top to explore the reference data</li>
+              <li>There isn't any error checking on your credentials</li>
+              <li>On first load the API can take up to 10 seconds to respond to the first request - working on speeding this up</li>
+              <li>Feedback? <a href="mailto:craig.roberts@uk.ibm.com">craig.roberts@uk.ibm.com</a></li>
+            </ul>
+            <br>
+            <button data-toggle="modal" type="button" class="btn btn-default" data-target="#notLocal">Why not run local?</button>
+            <br><br>
+            <button data-toggle="modal" type="button" class="btn btn-default" data-target="#madeIn">Whats is this made with?</button>
+      </div>
+    </div>
+    </div>
+
+<!-- Login Form -->
+    <div class="col-md-6">
+      <div class="wrapper">
+        <form class="form-signin">       
+          <h2 class="form-signin-heading">Enter Credentials</h2>
+          <input type="text" class="form-control" id="username" placeholder="Admin or other User">
+          <input type="password" class="form-control" id="password" placeholder="Password">
+          <input type="text" class="form-control" id="ip" placeholder="Console IP">
+          <button onclick="saveStatusLocally()" class="btn btn-lg btn-primary btn-block">Authorize API</button>
+          <button onclick="clearStorage()" class="btn btn-lg btn-danger btn-block">Unauthorize</button>  
+        </form>
+      </div>
+    </div>
+  </div>
+  
+<!-- Modals for rollovers -->
+
+
+  <div class="modal fade" id="madeIn" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Credits</h4>
+        </div>
+        <div class="modal-body">
+        <ul>
+          <li>This wouldn't be possible without QRadar Developments hard work on the API</li>
+          <li>All the pretty stuff is using <a href="http://getbootstrap.com">Bootstrap</a>, a front-end framework</li>
+          <li>Most of API calls are all done in Javascipt using the <a href="https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest">XMLHTTP</a> function</li>
+          <li>Feel free to dig around in the html/js, I have commented it best I can</li>
+        </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="notLocal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Why not run locally?</h4>
+        </div>
+        <div class="modal-body">
+        <ul>
+          <li>In response to modern browser based threats, no current browsers will allow cross site API calls</li>
+          <li>This protects users from XSS but means these pages won't work</li>
+          <li>Any option? You can run chrome in "local" mode or turn XSS protection off but personally I think this might be more dangerous to encourage</li>
+          <li><b>DANGER-ZONE</b> If you want to run it not on QRadar open chrome with "--disable-web-security"</li>
+        </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>        
+     
+<!-- End of Modals -->
+
+<!-- Scripts -->
+    <script src="./index_files/jquery.min.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+    <script src="./index_files/docs.min.js"></script>
+
+<!-- Custom JS -->
+    <script>
+      
+      //input field text
+      var usernameField = document.getElementById('username');
+      var passwordField = document.getElementById('password');
+      var ipField = document.getElementById('ip');
+
+      //clear the storage
+      function clearStorage() {
+      
+      //clear the storage
+      localStorage.clear("username");
+      localStorage.clear("password");
+      localStorage.clear("ip");
+      
+      //visually cleared
+      window.alert("Storage Cleared");
+      }
+
+      // save the string
+      function saveStatusLocally() {
+      
+      //grab the value of the username box
+      var userToSave = usernameField.value;
+      if ((userToSave == null) || (userToSave == "")) {
+        window.alert("No Username");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("username", usernameField.value);
+
+      }
+
+      var pwordToSave = passwordField.value;
+      if ((pwordToSave == null) || (pwordToSave == "")) {
+        window.alert("No Password");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("password", passwordField.value);
+
+      }
+
+      var ipToSave = ipField.value;
+      if ((ipToSave == null) || (ipToSave == "")) {
+        window.alert("No IP Address");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("ip", ip.value);
+      
+      }
+      //confirm write
+      window.alert("Credentials have been save - clear by clicking Unauthorize");
+
+      }
+
+      //put creds in navbar
+      function showCreds() {
+      
+      var showMeUser = window.localStorage.getItem("username")
+      var showMeIp = window.localStorage.getItem("ip")
+      var topRight = document.getElementById("loginInfo")
+
+      if ((showMeUser == null) || (showMeIp == null)) {
+        window.alert("Not Authorized Yet");
+      } else {
+      
+
+      topRight.innerHTML = showMeUser + "@" + showMeIp;
+
+      }
+    }
+
+    </script>  
+
+</body></html>
