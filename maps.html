@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Craig Roberts">
+
+
+    <title>Reference Set Tool</title>
+
+<!-- Bootstrap core CSS -->
+    <link href="./index_files/bootstrap.min.css" rel="stylesheet">
+
+<!-- Custom styles -->
+    <link href="./index_files/dashboard.css" rel="stylesheet">
+
+    
+  <style id="holderjs-style" type="text/css"></style>
+  <style type="text/css"></style>
+  </head>
+
+  <body onload="showCreds()">
+
+<!-- Navbar --> 
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Reference Set Tool</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/refSetTool/index.html">Login</a></li>
+            <li><a href="./sets.html">Sets</a></li>
+            <li><a href="./maps.html">Maps</a></li>
+            <li><a href="./mapofsets.html">Maps of Sets</a></li>
+            <li><a href="./mapofmaps.html">Maps of Maps</a></li>
+          </ul>
+
+<!-- Right hand side of Navbar --> 
+            <form class="navbar-form navbar-right" role="form">
+                <button onclick="clearStorage()" class="btn btn-danger">Unauthorize</button>
+                <button id="loginInfo" class="btn btn-default"></button>
+              </div>  
+            </form>
+        </div>
+      </div>
+    </div>
+
+<!-- End of Navbar -->
+
+  
+  
+<!-- Modals for rollovers -->
+
+
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Reference Data</h4>
+        </div>
+        <div class="modal-body">
+        ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>        
+     
+<!-- End of Modals -->
+
+<!-- Scripts -->
+    <script src="./index_files/jquery.min.js"></script>
+    <script src="./index_files/bootstrap.min.js"></script>
+    <script src="./index_files/docs.min.js"></script>
+
+<!-- Custom JS -->
+    
+    <script>
+  function showCreds() {
+      
+      var showMeUser = window.localStorage.getItem("username")
+      var showMePword = window.localStorage.getItem("password")
+      var showMeIp = window.localStorage.getItem("ip")
+      var topRight = document.getElementById("loginInfo")
+
+      if ((showMeUser == null) || (showMeIp == null)) {
+        window.alert("Not Authorized Yet");
+      } else {
+      
+
+      topRight.innerHTML = showMeUser + "@" + showMeIp;
+
+      }   
+    }
+
+  //grab the list of entries
+      var listReq = new XMLHttpRequest();
+  //Create Variables for auth
+      var showMeUser = window.localStorage.getItem("username");
+      var showMePword = window.localStorage.getItem("password");
+      var showMeIp = window.localStorage.getItem("ip");
+      var authHeader = window.btoa(showMeUser + ":" + showMePword);
+      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/maps";
+  //Start Grab
+      listReq.onload = grabList;
+      listReq.open("GET", baseUrl, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+  //parse the JSON and log to Console ready to operate on
+      function grabList () {
+        console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+  //Create the table, appending coloumns
+        var $table = $('#table');
+        for(var i = 0; i < list.length; i++) {
+        
+          tr = $('<tr/>');
+          tr.append("<td>" + "<a href=" + "#modal" + list[i].name + ">" + list[i].name + "</a>" + "</td>");
+          tr.append("<td>" + list[i].numberOfElements + "</td>");
+          tr.append("<td>" + list[i].elementType + "</td>");
+          tr.append("<td>" + new Date(list[i].createdTime*1000).toUTCString() + "</td>");
+          $('table').append(tr);
+        
+        }
+  //Cycle through list and API call each refset for data
+        for(var i = 0; i < list.length; i++) {
+        var dataReq = new XMLHttpRequest();
+        dataReq.onload = createModals;
+        dataReq.open("GET", ("https://172.72.72.5/restapi/api/referencedata/maps" + "/" + list[i].name), true);
+        dataReq.setRequestHeader('Content-Type', 'text/plain');
+        dataReq.setRequestHeader('Authorization', 'Basic ' + window.btoa("admin" + ":" + "passw1rd"));
+        dataReq.send();
+      }
+    }
+  //Create modals
+      function createModals() {
+      console.log(this.responseText);
+      var results = JSON.parse(this.responseText);
+      
+      }
+
+    
+       
+  </script>
+
+</body></html>
