@@ -1,4 +1,4 @@
-#Reference Data Tool
+# Reference Data Tool
 
 A Tool to explore reference Data in QRadar, this includes refmaps which can't be viewed in the interface currently.
 
@@ -8,4 +8,4 @@ Probably won't work in Internet Explorer
 
 **COMES WITH ABSOLUTELY NO WARRANTY - DO NOT CONTACT QRADAR SUPPORT**
 
-by [mailto:craig.roberts@uk.ibm.com](craig.roberts@uk.ibm.com)
+by [Craig Roberts](mailto:craig.roberts@uk.ibm.com)
