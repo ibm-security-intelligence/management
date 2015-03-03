@@ -10,7 +10,7 @@
 
     <title>Reference Data Tool</title>
 
-    <!-- CSS Files -->
+<!-- CSS Files -->
     <link href="./css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/dashboard.css" rel="stylesheet">
     <style id="holderjs-style" type="text/css"></style>
@@ -42,8 +42,8 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="./index.html">Dashboard</a></li>
-            <li><a href="./sets.html">Sets</a></li>
-            <li class="active"><a href="./maps.html">Maps</a></li>
+            <li class="active"><a href="./sets.html">Sets</a></li>
+            <li><a href="./maps.html">Maps</a></li>
             <li><a href="./mapofsets.html">Maps of Sets</a></li>
 	    <li><a href="./mapofmaps.html">Map of Maps</a></li>
             <li><a href="./tables.html">Tables</a></li>
@@ -86,9 +86,8 @@
           <h4 class="modal-title" id="myModalLabel">Reference Data</h4>
         </div>
         <div class="modal-body">
-        <table id="myModalTable" class="table">
+        <table class="table" id="dataTable">
             <thead>
-                <th><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;Key</th>
                 <th><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;Value</th>
                 <th><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;Source</th>
                 <th><span class="glyphicon glyphicon-chevron-down"></span>&nbsp;First Seen</th>
@@ -109,45 +108,12 @@
 
 <!-- Modals for each tab -->
 
-  <div class="modal fade" id="create" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel">Create</h4>
-        </div>
-        <div class="modal-body">
-          <form class="form-signin">  
-                <select id="refTypeSelector" class="form-control">
-                  <option value="set">Set</option>
-                  <option value="maps">Map</option>
-                  <option value="mapOfSets">Map of Sets</option>
-                  <option value="table">Table</option>
-                </select>
-                <br>     
-                <input type="text" class="form-control" id="createname" placeholder="Name of Reference Data">
-                <br>
-                <select id="dataTypeSelector" class="form-control">
-                  <option value="ALN">ALN</option>
-                  <option value="ALNIC">ALNIC</option>
-                  <option value="IP">IP</option>
-                  <option value="Port">Port</option>
-                  <option value="Date">Date</option>
-                </select>
-                <br>
-                <button onclick="createReferenceData()" class="btn btn-primary">Create</button>           
-            </form>
-        </div>
-      </div>        
-    </div>
-  </div>
-
   <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title" id="myModalLabel">Create</h4>
+          <h4 class="modal-title" id="myModalLabel">Login</h4>
         </div>
         <div class="modal-body">
           <form class="form-signin">       
@@ -200,7 +166,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-          Whats is this made with?
+          Whats this made with?
         </a>
       </h4>
     </div>
@@ -239,38 +205,16 @@
         </div>
       </div>
       </div>
-    </div>     
-     
-<!-- End of Modals -->
+    </div>
+
+    <!-- End of default Models -->
+
+
+            
 <!-- Custom per-reference data type JS -->
-
-    <script>
-    function createReferenceData(){
-    var ReferenceType = document.getElementById("refTypeSelector").value;
-    var ReferenceDataType = document.getElementById("dataTypeSelector").value;
-    var name = document.getElementById("createname").value
-    console.log(document.getElementById("createname").value);
-    console.log(document.getElementById("dataTypeSelector").value);
-    console.log(document.getElementById("refTypeSelector").value);
-    //grab the list of entries
-      var listReq = new XMLHttpRequest();
-  //Create Variables for auth
-      var showMeUser = window.localStorage.getItem("username");
-      var showMePword = window.localStorage.getItem("password");
-      var showMeIp = window.localStorage.getItem("ip");
-      var authHeader = window.btoa(showMeUser + ":" + showMePword);
-      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/" + ReferenceType + "?name=" + name + "&elementType=" + ReferenceDataType;
-  //Start post
-      listReq.open("POST", baseUrl, true);
-      listReq.setRequestHeader('Content-Type', 'text/plain');
-      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
-      listReq.send();
-
-    }
-    </script>
     
     <script>
-        
+
   //grab the list of entries
       var listReq = new XMLHttpRequest();
   //Create Variables for auth
@@ -278,7 +222,7 @@
       var showMePword = window.localStorage.getItem("password");
       var showMeIp = window.localStorage.getItem("ip");
       var authHeader = window.btoa(showMeUser + ":" + showMePword);
-      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/maps";
+      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/sets";
   //Start Grab
       listReq.onload = grabList;
       listReq.open("GET", baseUrl, true);
@@ -297,26 +241,26 @@
           tr.append("<td>" + "<a href='javascript:void(0)'" + "onclick='sendQuery(" + '"' + list[i].name + '"' + ");'>" + list[i].name + "</a>" + "</td>");
           tr.append("<td>" + list[i].numberOfElements + "</td>");
           tr.append("<td>" + list[i].elementType + "</td>");
-          tr.append("<td>" + timeConverter(list[i].createdTime) + "</td>");
+          tr.append("<td>" + timeConverter(list[i].creationTime) + "</td>");
           $('#listTable').append(tr);
         
         }
           
-            $("#myLoadPageTable").tablesorter({ 
+          $("#myLoadPageTable").tablesorter({ 
                 sortList: [0,0],
-                headerTemplate: '{content} {icon}',
+                headerTemplate: '{content}',
                 widgets : ['columns', 'filter'],
             });
-
+          
       }
   
-            //Create modals
+//Create modals
       function sendQuery(listName) {
         var showMeUser = window.localStorage.getItem("username");
         var showMePword = window.localStorage.getItem("password");
         var showMeIp = window.localStorage.getItem("ip");
         var authHeader = window.btoa(showMeUser + ":" + showMePword);
-        var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/maps";
+        var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/sets";
         var dataReq = new XMLHttpRequest();
         dataReq.onload = createModal
         dataReq.open("GET", (baseUrl + "/" + listName + "?limit=1500"), true);
@@ -337,22 +281,23 @@
             if (dataArray.data.hasOwnProperty(everyKey)) {
             var parse = dataArray.data[everyKey];
         jQuery('<tr/>', {       
-            html: "<td>" + everyKey + "</td>" + "<td>" + parse.value + "</td>" + "<td>" + parse.source + "</td>" + "<td>" + timeConverter(parse.firstSeen) + "<td>" + timeConverter(parse.lastSeen) + "</td>",
-        }).appendTo('#dataTableBody');
+            html: "<td>" + parse.value + "</td>" + "<td>" + parse.source + "</td>" + "<td>" + timeConverter(parse.firstSeen) + "<td>" + timeConverter(parse.lastSeen) + "</td>",
+        }).appendTo('#dataTable > #dataTableBody');
         }
+            
+            
         }
-        
-            $("#myModalTable").tablesorter({
-                headerTemplate: '{content} {icon}',
+           
+        $("#dataTable").tablesorter({
+                headerTemplate: '{content}',
                 widgets : ['columns', 'filter'],
             });
-
-        
             
         //Show the modal popover
         $('#myModal').modal('show');
         
       }
+          
       }
     
     
