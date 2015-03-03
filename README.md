@@ -1,15 +1,24 @@
 # Reference Data Tool
 
-A Tool to explore reference Data in QRadar, this includes refmaps which can't be viewed in the interface currently.
 
-Copy folder to /opt/qradar/www then open the <console IP>/refSetTool
+## Aim 
 
-Probably won't work in Internet Explorer 
+A webUI to explore reference Data in QRadar, this includes the types which can't be viewed in the interface currently.
 
-All links to 3rd party js libs are via CDNs, if your qradar console is not connected to the internet you will need to manually download them and link them in each html file, email me if you are having issues (craig.roberts@uk.ibm.com)
+For more information on reference data see [here](http://www-01.ibm.com/support/knowledgecenter/SS42VS_7.2.4/com.ibm.qradar.doc_7.2.4/c_qradar_adm_ref_data_collection_overview.html?lang=en)
 
-This was made by IBM QRadar Lab Services, if you need help with your qradar deployment, integration, tuning, incident response or scaling/arcitecture - please feel free to reach out.
+## Setup
 
-**COMES WITH ABSOLUTELY NO WARRANTY - DO NOT CONTACT QRADAR SUPPORT**
+Clone this folder (or download the zip) to `/opt/qradar/www` then open `https://qradar console IP/refSetTool`, authenticate yourself using the login button - this will store your credentials in the localstorage of your browser (I would recommend using Firefox or Chrome/Chromium).
 
-by [Craig Roberts](mailto:craig.roberts@uk.ibm.com)
+All links to 3rd party javascript libraries are via CDNs, if your qradar console is not connected to the internet you will need to manually download them and link them in each html file.
+
+## Credits 
+
+This was made by Craig Roberts from IBM QRadar Lab Services, if you need help with your qradar deployment, integration, tuning, incident response or scaling/architecture - you can find my email on the ibm website [http://www.ibm.com/contact/employees/uk/en/](http://www.ibm.com/contact/employees/uk/en/)
+
+## Warranties
+
+These samples are provided for reference purposes on an "as is" basis, and are without warranties of any kind.
+
+Any issues discovered using the samples should not be directed to QRadar support, but be reported on the Github issues tracker.
