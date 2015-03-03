@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Reference Data Tool for QRadar">
+    <meta name="author" content="craig.roberts@uk.ibm.com">
+    <title>Reference Data Tool</title>
+<!-- CSS Files -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/dashboard.css" rel="stylesheet">
+<!-- Scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.1/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.widgets.min.js"></script>
+<script src="./js/refSetTool.js"></script>
+<style id="holderjs-style" type="text/css"></style>
+<style type="text/css"></style>
+</head>
+
+  <body onload="showCreds()">
+
+<!-- Navbar --> 
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Reference Data Tool</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="./index.html">Dashboard</a></li>
+            <li><a href="./sets.html">Sets</a></li>
+            <li><a href="./maps.html">Maps</a></li>
+            <li><a href="./mapofsets.html">Maps of Sets</a></li>
+            <li><a href="./mapofmaps.html">Tables</a></li>
+	    <li><a href="./mapofmaps.html">Map of Maps</a></li>
+            <li><a href="./tables.html">Tables</a></li>
+
+          </ul>
+
+<!-- Right hand side of Navbar --> 
+        <div class="navbar-form navbar-right" role="form">
+                
+                
+            <button data-target="#login" class="dropdown-toggle btn btn-primary" href="#" data-toggle="modal" id="loginInfo">Login</button>
+            <span id="loginInfo"></span>
+          <button onclick="clearStorage()" class="btn btn-danger">Logout</button>
+          <a data-target="#help" data-toggle="modal" href="#help"><i class="glyphicon glyphicon-question-sign inverse"></i>Help</a>
+        </div>  
+          
+
+       
+          
+        </div>
+      </div>
+    </div>
+
+<!-- End of Navbar -->
+<div class="row">
+  <div id="alertArea"></div>
+</div>
+<div class="row">
+  <div class="col-md-4 well center-block">
+    <canvas class="mycenter" id="typesBreakdown"  width="300px" height="300px"></canvas>
+    <h3 class="text-center">Breakdown of Types</h3>
+  </div>
+  <div class="col-md-4">
+    <br>
+    <br>
+    <a href="./sets.html"><button type="button" class="btn text-center btn-default btn-lg btn-block">Reference Sets</button></a>
+    <br>
+    <a href="./maps.html"><button type="button" class="btn text-center btn-default btn-lg btn-block">Reference Maps</button></a>
+    <br>
+    <a href="./mapofsets.html"><button type="button" class="btn text-center btn-default btn-lg btn-block">Reference Map of Sets</button></a>
+    <br />
+    <a href="./mapofmaps.html"><button type="button" class="btn text-center btn-default btn-lg btn-block">Reference Map of Maps</button></a>
+    <br>
+    <a href="./tables.html"><button type="button" class="btn text-center btn-default btn-lg btn-block">Reference Tables</button></a>
+  </div>
+  <div class="col-md-4 well center-block">
+    <canvas class="mycenter" id="totalData" width="300px" height="300px"></canvas>
+    <h3 class="text-center">Total Entries per type</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4 well center-block">
+    <h3 class="text-center">Delete Reference Data</h3>
+    <form class="form-signin form-horizontal" role="form">  
+                <select id="refTypeToDestroy" class="form-control">
+                  <option value="sets">Set</option>
+                  <option value="maps">Map</option>
+                  <option value="mapOfSets">Map of Sets</option>
+                  <option value="mapOfMaps">Map of Maps</option>
+                  <option value="tables">Table</option>
+                </select>
+                <br>
+                <button onclick="populateList()" type="button" class="btn btn-default">Fetch</button>
+                <br><br>
+                <select id="dataNametoDestory" class="form-control">
+                </select>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="wantToPurge"> Just Purge Contents
+                  </label>
+                </div> 
+                <button onclick="return deleteReferenceData()" type="button" class="btn btn-danger">Delete</button> 
+                 
+            </form>
+  </div>
+  <div class="col-md-4 center-block">
+    <h1 class="text-center"><strong>Reference Data Tool</strong></h1>
+    <h2 class="text-center"><a href="mailto:craig.roberts@uk.ibm.com">Craig Roberts</a></h2>
+    <a data-target="#help" data-toggle="modal" href="#help"><h2 class="text-muted text-center">IBM QRadar Professional Services ></h2></a>
+  </div>
+  <div class="col-md-4 well center-block">
+    <h3 class="text-center">Create Reference Data</h3>
+    <form class="form-signin">  
+                <select id="refTypeSelector" class="form-control">
+                  <option value="sets">Set</option>
+                  <option value="maps">Map</option>
+                  <option value="mapOfSets">Map of Sets</option>
+                  <option value="table">Table</option>
+                </select>
+                <br>     
+                <input type="text" class="form-control" id="createname" placeholder="Name of Data (NO SPACES)">
+                <br>
+                <select id="dataTypeSelector" class="form-control">
+                  <option value="ALN">ALN</option>
+                  <option value="ALNIC">ALNIC</option>
+                  <option value="IP">IP</option>
+                  <option value="Port">Port</option>
+                  <option value="Date">Date</option>
+                </select>
+                <br>
+                <button onclick=" return createReferenceData()" type="button" class="btn btn-success">Create</button>   
+            </form>
+  </div>
+
+
+</div>
+
+
+
+<!-- Modals for each tab -->
+
+  <div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Login</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-signin">       
+                <h2 class="form-signin-heading">Enter Credentials</h2>
+                <input type="text" class="form-control" id="username" placeholder="Admin or other User">
+                <input type="password" class="form-control" id="password" placeholder="Password">
+                <input type="text" class="form-control" id="ip" placeholder="Console IP"><br>
+                <button onclick="saveStatusLocally()" class="btn btn-primary">Authorize API</button>
+                <button onclick="clearStorage()" class="btn btn-danger">Logout</button>  
+              </form>
+        </div>
+      </div>        
+    </div>
+  </div>
+
+  
+  <div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">Readme</h4>
+        </div>
+        <div class="modal-body">
+            
+
+  <div class="panel-group" id="accordion">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+          How do I login?
+        </a>
+      </h4>
+    </div>
+    <div id="collapseOne" class="panel-collapse collapse">
+      <div class="panel-body">
+        <ul>
+              <li>Use the box on the right enter the details</li>
+              <li>These will be stored in html5 localstorage in your web browser</li>
+              <li>You can delete these at any using the "unauthorize" or "logout" button</li>
+              <li>You can then use the tabs at the top to explore the reference data</li>
+              <li>There isn't any error checking on your credentials</li>
+              <li>On first load the API can take up to 10 seconds to respond to the first request - working on speeding this up</li>
+            </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+          Whats is this made with?
+        </a>
+      </h4>
+    </div>
+    <div id="collapseTwo" class="panel-collapse collapse">
+      <div class="panel-body">
+      <ul>
+          <li>This wouldn't be possible without QRadar Developments hard work on the API</li>
+          <li>All the pretty stuff is using <a href="http://getbootstrap.com">Bootstrap</a>, a front-end framework</li>
+          <li>Most of API calls are all done in Javascipt using the <a href="https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest">XMLHTTP</a> function</li>
+          <li>Feel free to dig around in the html/js, I have commented it best I can</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+          Why not run local?
+        </a>
+      </h4>
+    </div>
+    <div id="collapseThree" class="panel-collapse collapse">
+      <div class="panel-body">
+        <ul>
+          <li>In response to modern browser based threats, no current browsers will allow cross site API calls</li>
+          <li>This protects users from XSS but means these pages won't work</li>
+          <li>Any option? You can run chrome in "local" mode or turn XSS protection off but personally I think this might be more dangerous to encourage</li>
+          <li><b>DANGER-ZONE</b> If you want to run it not on QRadar open chrome with "--disable-web-security"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+          Who made this?
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFour" class="panel-collapse collapse">
+      <div class="panel-body">
+        <ul>
+          <li>This was made by Craig in IBM professional services, a division of QRadar subject matter experts</li>
+          <li>Please feel free to get in contact if you have a requirement for QRadar Consulting</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
+          Is this supported
+        </a>
+      </h4>
+    </div>
+    <div id="collapseFive" class="panel-collapse collapse">
+      <div class="panel-body">
+        <ul>
+          <li>Not at all - please <strong>DO NOT</strong> contact IBM QRadar Support regarding this tool</li>
+          <li>If you notice issues please feel free to contact the <a href="mailto:craig.roberts@uk.ibm.com">developer</a></li>
+          <li>Most of my time is spent helping clients with QRadar so please don not expect and immediate reply or resolution</li>
+          <li>This tool comes with no warranties and can delete parts of your QRadar system - use at your own risk</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>    
+     
+<!-- End of Modals -->
+
+
+
+<!-- Custom JS -->
+<script>
+//Calls to create reference data
+
+    function createReferenceData(){
+    var ReferenceType = document.getElementById("refTypeSelector").value;
+    var ReferenceDataType = document.getElementById("dataTypeSelector").value;
+    var name = document.getElementById("createname").value
+    console.log(document.getElementById("createname").value);
+    console.log(document.getElementById("dataTypeSelector").value);
+    console.log(document.getElementById("refTypeSelector").value);
+    //grab the list of entries
+      var listReq = new XMLHttpRequest();
+    //Create Variables for auth
+      var showMeUser = window.localStorage.getItem("username");
+      var showMePword = window.localStorage.getItem("password");
+      var showMeIp = window.localStorage.getItem("ip");
+      var authHeader = window.btoa(showMeUser + ":" + showMePword);
+      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/" + ReferenceType + "?name=" + name + "&elementType=" + ReferenceDataType;
+  //Start post
+      listReq.open("POST", baseUrl, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      fireEvent("success", "Reference Data has been created successfully");
+
+    }
+</script>
+
+<script>
+//calls to delete reference data
+
+    function populateList(){
+      //grab the list of entries
+      var listReq = new XMLHttpRequest();
+      //Create Variables for auth
+      var showMeUser = window.localStorage.getItem("username");
+      var showMePword = window.localStorage.getItem("password");
+      var showMeIp = window.localStorage.getItem("ip");
+      var authHeader = window.btoa(showMeUser + ":" + showMePword);
+      var targetElement;
+      var refTypeToDestroy = document.getElementById("refTypeToDestroy").value;
+
+      if (refTypeToDestroy == "mapOfMaps") {
+	 targetElement = "tables"; 
+      } else {
+	 targetElement = document.getElementById("refTypeToDestroy").value;
+      }
+
+      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/" + targetElement;
+      //Start Grab
+      listReq.onload = grabNameList;
+      listReq.open("GET", baseUrl, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      //parse the JSON and log to Console ready to operate on
+      function grabNameList () {
+        console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+        //Create the list appending options
+
+        $( "#dataNametoDestory" ).empty();
+        for(var i = 0; i < list.length; i++) {
+          console.log("Is a table: " + list[i].hasOwnProperty('keyNameTypes'));
+
+	  if (refTypeToDestroy == "mapOfMaps" && (list[i].hasOwnProperty('keyNameTypes'))) {
+	      continue; 
+	  }
+
+	  if (refTypeToDestroy == "tables" && (!list[i].hasOwnProperty('keyNameTypes'))) {
+	      continue; 
+	  }
+	  
+          console.log(list[i].name)
+          var x = document.getElementById("dataNametoDestory");
+          var option = document.createElement("option");
+          option.text = list[i].name;
+          x.add(option);
+        
+        }
+    }
+  }
+    function deleteReferenceData(){
+    //grab the list of entries
+      var listReq = new XMLHttpRequest();
+    //Create Variables for auth
+      var showMeUser = window.localStorage.getItem("username");
+      var showMePword = window.localStorage.getItem("password");
+      var showMeIp = window.localStorage.getItem("ip");
+      var authHeader = window.btoa(showMeUser + ":" + showMePword);
+      var refTypeToDestroy = document.getElementById("refTypeToDestroy").value;
+      var targetElement;
+
+      if (refTypeToDestroy == "mapOfMaps") {
+	 targetElement = "tables"; 
+      } else {
+	 targetElement = document.getElementById("refTypeToDestroy").value;
+      }
+
+      var baseUrl = "https://" + showMeIp + "/restapi/api/referencedata/" + targetElement + "/" +  document.getElementById("dataNametoDestory").value;
+      var purgeBaseUrl = "https://" + showMeIp + "/restapi/api/referencedata/" + targetElement + "/" +  document.getElementById("dataNametoDestory").value + "?purgeOnly=true";
+  //Start post
+      if (document.getElementById('wantToPurge').checked) {
+            listReq.open("DELETE", purgeBaseUrl, true);
+            listReq.setRequestHeader('Content-Type', 'text/plain');
+            listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+            listReq.send();
+            fireEvent("success", "Reference Data has purged successfully");;
+        } else {
+            listReq.open("DELETE", baseUrl, true);
+            listReq.setRequestHeader('Content-Type', 'text/plain');
+            listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+            listReq.send();
+            fireEvent("success", "Reference Data has been deleted successfully");
+        }
+      
+
+    }
+</script>
+
+
+
+<script>
+ //calls for chart data
+      
+
+      var listReq = new XMLHttpRequest();
+      //Create Variables for auth
+      var showMeUser = window.localStorage.getItem("username");
+      var showMePword = window.localStorage.getItem("password");
+      var showMeIp = window.localStorage.getItem("ip");
+      var authHeader = window.btoa(showMeUser + ":" + showMePword);
+      var baseUrlSet = "https://" + showMeIp + "/restapi/api/referencedata/sets";
+      var baseUrlMaps = "https://" + showMeIp + "/restapi/api/referencedata/maps"; 
+      var baseUrlMapOfSets = "https://" + showMeIp + "/restapi/api/referencedata/mapOfSets"; 
+      var baseUrlTables = "https://" + showMeIp + "/restapi/api/referencedata/tables"; 
+      
+      //SETS
+      listReq.onload = grabListSets;
+      listReq.open("GET", baseUrlSet, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      function grabListSets () {
+       console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+         var sumOfSets = 0;
+        for(var len = list.length, i=0; i < len; i++){
+        var item = list[i]; 
+          sumOfSets += parseInt(item.numberOfElements, 10); 
+          console.log(sumOfSets)
+      }
+      //MAPS
+      listReq.onload = grabListMaps;
+      listReq.open("GET", baseUrlMaps, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      function grabListMaps () {
+       console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+         var sumOfMaps = 0;
+        for(var len = list.length, j=0; j < len; j++){
+        var item = list[j]; 
+          sumOfMaps += parseInt(item.numberOfElements, 10); 
+          console.log(sumOfMaps)
+      }
+      //MAPSOFSETS
+      listReq.onload = grabListMapOfSets;
+      listReq.open("GET", baseUrlMapOfSets, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      function grabListMapOfSets () {
+       console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+         var sumOfMapOfSets = 0;
+        for(var len = list.length, k=0; k < len; k++){
+        var item = list[k]; 
+          sumOfMapOfSets += parseInt(item.numberOfElements, 10); 
+          console.log(sumOfMapOfSets)
+      }
+      //TABLE
+      listReq.onload = grabListTables;
+      listReq.open("GET", baseUrlTables, true);
+      listReq.setRequestHeader('Content-Type', 'text/plain');
+      listReq.setRequestHeader('Authorization', 'Basic ' + authHeader);
+      listReq.send();
+      function grabListTables () {
+       console.log(this.responseText);
+        var list = JSON.parse(this.responseText);
+         var sumOfTables = 0;
+        for(var len = list.length, l=0; l < len; l++){
+        var item = list[l]; 
+          sumOfTables += parseInt(item.numberOfElements, 10); 
+          console.log(sumOfTables)
+      }
+      
+
+    var totalSets = i;
+    var totalMaps = j;
+    var totalMapsOfSets = k;
+    var totalTables = l;
+
+
+    var typesBreakdownData = [
+    {
+        value: totalSets,
+        color:"#664e5a",
+        highlight: "#664e5a",
+        label: "Sets"
+    },
+    {
+        value: totalMaps,
+        color: "#4e5a66",
+        highlight: "#4e5a66",
+        label: "Maps"
+    },
+    {
+        value: totalMapsOfSets,
+        color: "#5a664e",
+        highlight: "#5a664e",
+        label: "Maps of Sets"
+    },
+    {
+        value: totalTables,
+        color: "#665a4e",
+        highlight: "#665a4e",
+        label: "Tables"
+    }
+]
+
+    var typesBreakdownChart = document.getElementById('typesBreakdown').getContext('2d');
+    new Chart(typesBreakdownChart).Pie(typesBreakdownData);
+
+    var totalDataData = {
+    labels : ["Sets","Maps","Maps of Sets","Tables"],
+    datasets : [
+    {
+      fillColor : "rgba(172,194,132,0.4)",
+      strokeColor : "#ACC26D",
+      pointColor : "#fff",
+      pointStrokeColor : "#9DB86D",
+      data : [sumOfSets,sumOfMaps,sumOfMapOfSets,sumOfTables]
+        }
+      ]
+    }
+
+
+
+    var totalDataChart = document.getElementById('totalData').getContext('2d');
+    new Chart(totalDataChart).Bar(totalDataData);
+}}}}
+    
+</script>
+
+<script>
+function saveStatusLocally() {
+
+      //input field text
+      var usernameField = document.getElementById('username');
+      var passwordField = document.getElementById('password');
+      var ipField = document.getElementById('ip');
+      
+      //grab the value of the username box
+      var userToSave = usernameField.value;
+      if ((userToSave == null) || (userToSave == "")) {
+        fireEvent("warning","No Username");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("username", usernameField.value);
+
+      }
+
+      var pwordToSave = passwordField.value;
+      if ((pwordToSave == null) || (pwordToSave == "")) {
+        fireEvent("warning","No Password");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("password", passwordField.value);
+
+      }
+
+      var ipToSave = ipField.value;
+      if ((ipToSave == null) || (ipToSave == "")) {
+        fireEvent("warning","No IP Address");
+      } else {
+      
+      //print that value into the local storage named username 
+      window.localStorage.setItem("ip", ip.value);
+      
+      }
+      //confirm write
+        fireEvent("success","Credentials Saved");
+      }
+</script>
+
+</body></html>
