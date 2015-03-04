@@ -15,7 +15,7 @@ log onto your QRadar **console** via ssh
 
 `git clone https://github.com/ibm-security-intelligence/management.git`
 
-then navigate to 
+then navigate in your browser (Firefox or Chrome/Chromium) to 
 
 `https://qradar-fqdn-or-ip/manangement/refDataTool`
 
