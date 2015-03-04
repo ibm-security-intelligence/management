@@ -11,6 +11,8 @@ For more information on reference data see [here](http://www-01.ibm.com/support/
 
 log onto your QRadar **console** via ssh
 
+`cd /opt/qradar/www`
+
 `git clone https://github.com/ibm-security-intelligence/management.git`
 
 then navigate to 
