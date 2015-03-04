@@ -9,7 +9,13 @@ For more information on reference data see [here](http://www-01.ibm.com/support/
 
 ## Setup
 
-Clone this folder (or download the zip) to `/opt/qradar/www` then open `https://qradar console IP/refSetTool`, authenticate yourself using the login button - this will store your credentials in the localstorage of your browser (I would recommend using Firefox or Chrome/Chromium).
+log onto your QRadar **console** via ssh
+
+`git clone https://github.com/ibm-security-intelligence/management.git`
+
+then navigate to 
+
+`https://qradar-fqdn-or-ip/manangement/refDataTool`
 
 All links to 3rd party javascript libraries are via CDNs, if your qradar console is not connected to the internet you will need to manually download them and link them in each html file.
 
