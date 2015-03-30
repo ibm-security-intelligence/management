@@ -1,3 +1,4 @@
+![Alt text](screenshot.png?raw=true "Screenshot")
 # Reference Data Tool
 
 
