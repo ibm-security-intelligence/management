@@ -18,7 +18,7 @@ log onto your QRadar **console** via ssh
 
 then navigate in your browser (Firefox or Chrome/Chromium) to 
 
-`https://qradar-fqdn-or-ip/manangement/refDataTool`
+`https://qradar-fqdn-or-ip/management/refDataTool`
 
 All links to 3rd party javascript libraries are via CDNs, if your qradar console is not connected to the internet you will need to manually download them and link them in each html file.
 
